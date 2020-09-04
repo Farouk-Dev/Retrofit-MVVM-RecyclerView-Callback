@@ -1,5 +1,7 @@
 package com.training.mvvm.data
 
+import com.training.mvvm.pojo.PostModel
+import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -20,5 +22,9 @@ class PostClient {
             Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create())
                 .build()
         postInterface = retrofit.create(PostInterface::class.java)
+    }
+
+    fun getPosts(): Call<PostModel> {
+        return postInterface.getPost()
     }
 }
