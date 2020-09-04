@@ -1,8 +1,8 @@
 package com.training.mvvm.data
 
-import android.util.Log
 import com.training.mvvm.pojo.PostModel
-import retrofit2.Call
+import hu.akarnokd.rxjava3.retrofit.RxJava3CallAdapterFactory
+import io.reactivex.rxjava3.core.Observable
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -23,12 +23,14 @@ class PostClient {
 
     init {
         val retrofit: Retrofit =
-            Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create())
+            Retrofit.Builder().baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
                 .build()
         postInterface = retrofit.create(PostInterface::class.java)
     }
 
-    fun getPosts(): Call<List<PostModel>> {
+    fun getPosts(): Observable<List<PostModel>> {
         return postInterface.getPost()
     }
 

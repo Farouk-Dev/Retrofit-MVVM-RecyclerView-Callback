@@ -1,12 +1,13 @@
 package com.training.mvvm.ui.main
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.training.mvvm.data.PostClient
 import com.training.mvvm.pojo.PostModel
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.schedulers.Schedulers
 
 
 class PostViewModel : ViewModel() {
@@ -14,20 +15,11 @@ class PostViewModel : ViewModel() {
 
     // callback
     fun getPosts() {
-        PostClient.getInstance()?.getPosts()
-            ?.enqueue(object : Callback<List<PostModel>> {
-                override fun onResponse(
-                    call: Call<List<PostModel>>,
-                    response: Response<List<PostModel>>
-                ) {
-                    postsMutableLiveData.value = response.body()
-                }
+        val observable: Observable<List<PostModel>>? = PostClient.getInstance()?.getPosts()
+        observable?.subscribeOn(Schedulers.io())
+            ?.observeOn(AndroidSchedulers.mainThread())
+            ?.subscribe({ posts -> postsMutableLiveData.value = posts },
+                { e -> Log.d("Error :", e.toString()) })
 
-                override fun onFailure(
-                    call: Call<List<PostModel>>,
-                    t: Throwable?
-                ) {
-                }
-            })
     }
 }
